@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 import "@aws-amplify/ui-react/styles.css";
-import { Amplify, Storage } from "aws-amplify";
+import { Amplify } from "aws-amplify";
 import { generateClient } from "aws-amplify/api";
 import config from './amplifyconfiguration.json';
 import {
   Button,
   Flex,
   Heading,
+  Image,
   Text,
   TextField,
   View,
@@ -21,6 +22,18 @@ import {
 
 Amplify.configure(config);
 const API = generateClient();
+// const Storage = Amplify.Storage;
+Amplify.configure({
+  ...Amplify.getConfig(),
+  Storage: {
+    S3: {
+      region: 'us-east-1', // (required) - Amazon S3 bucket region
+      bucket: 'amplify-amplifyb7afbd01a05a4-staging-11438-deployment' // (required) - Amazon S3 bucket URI
+    }
+  }
+});
+
+const Storage = Amplify.Storage;
 
 const App = ({ signOut }) => {
   const [notes, setNotes] = useState([]);
@@ -107,29 +120,29 @@ const App = ({ signOut }) => {
       </View>
       <Heading level={2}>Current Notes</Heading>
       <View margin="3rem 0">
-        {notes.map((note) => (
-          <Flex
-            key={note.id || note.name}
-            direction="row"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <Text as="strong" fontWeight={700}>
-              {note.name}
-            </Text>
-            <Text as="span">{note.description}</Text>
-            {note.image && (
-              <Image
-                src={note.image}
-                alt={`visual aid for ${notes.name}`}
-                style={{ width: 400 }}
-              />
-            )}
-            <Button variation="link" onClick={() => deleteNote(note)}>
-              Delete note
-            </Button>
-          </Flex>
-        ))}
+      {notes.map((note) => (
+        <Flex
+          key={note.id || note.name}
+          direction="row"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Text as="strong" fontWeight={700}>
+            {note.name}
+          </Text>
+          <Text as="span">{note.description}</Text>
+          {note.image && (
+            <Image
+              src={note.image}
+              alt={`visual aid for ${notes.name}`}
+              style={{ width: 400 }}
+            />
+          )}
+          <Button variation="link" onClick={() => deleteNote(note)}>
+            Delete note
+          </Button>
+        </Flex>
+      ))}
       </View>
       <Button onClick={signOut}>Sign Out</Button>
     </View>
