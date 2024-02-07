@@ -17,6 +17,9 @@
       },
       "api": {
         "swen614amplifyfullst": {}
+      },
+      "storage": {
+        "amplifyimagestorage": {}
       }
     }
   }

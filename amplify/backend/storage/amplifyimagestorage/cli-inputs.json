@@ -1,0 +1,14 @@
+{
+  "resourceName": "amplifyimagestorage",
+  "policyUUID": "2f6abfc6",
+  "bucketName": "swen614amplifyfullst698a87a3f39340049cfb56385ee",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}
