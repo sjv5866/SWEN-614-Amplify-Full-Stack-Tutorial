@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./App.css";
 import "@aws-amplify/ui-react/styles.css";
 import { Amplify } from "aws-amplify";
+import { getUrl, uploadData, remove } from 'aws-amplify/storage';
 import { generateClient } from "aws-amplify/api";
 import config from './amplifyconfiguration.json';
 import {
@@ -22,18 +23,6 @@ import {
 
 Amplify.configure(config);
 const API = generateClient();
-// const Storage = Amplify.Storage;
-Amplify.configure({
-  ...Amplify.getConfig(),
-  Storage: {
-    S3: {
-      region: 'us-east-1', // (required) - Amazon S3 bucket region
-      bucket: 'amplify-amplifyb7afbd01a05a4-staging-11438-deployment' // (required) - Amazon S3 bucket URI
-    }
-  }
-});
-
-const Storage = Amplify.Storage;
 
 const App = ({ signOut }) => {
   const [notes, setNotes] = useState([]);
@@ -48,7 +37,7 @@ const App = ({ signOut }) => {
     await Promise.all(
       notesFromAPI.map(async (note) => {
         if (note.image) {
-          const url = await Storage.get(note.name);
+          const url = await getUrl({key: note.name, options: {validateObjectExistence: true}});
           note.image = url;
         }
         return note;
@@ -66,7 +55,7 @@ const App = ({ signOut }) => {
       description: form.get("description"),
       image: image.name,
     };
-    if (!!data.image) await Storage.put(data.name, image);
+    if (!!data.image) await uploadData({key: data.name, data: image}).result;
     await API.graphql({
       query: createNoteMutation,
       variables: { input: data },
@@ -79,7 +68,7 @@ const App = ({ signOut }) => {
   async function deleteNote({ id, name }) {
     const newNotes = notes.filter((note) => note.id !== id);
     setNotes(newNotes);
-    await Storage.remove(name);
+    await remove({key: name});
     await API.graphql({
       query: deleteNoteMutation,
       variables: { input: { id } },
